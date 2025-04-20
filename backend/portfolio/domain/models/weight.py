@@ -10,7 +10,7 @@ class Weight(models.Model):
     """
     asset = models.ForeignKey(Asset, on_delete=models.CASCADE, related_name='weights')
     portfolio = models.ForeignKey(Portfolio, on_delete=models.CASCADE, related_name='weights')
-    weight = models.DecimalField(max_digits=5, decimal_places=2)
+    weight = models.DecimalField(max_digits=10, decimal_places=8)
 
     class Meta:
         unique_together = ('asset', 'portfolio')

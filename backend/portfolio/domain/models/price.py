@@ -8,7 +8,7 @@ class Price(models.Model):
     """
     asset = models.ForeignKey(Asset, on_delete=models.CASCADE, related_name='prices')
     date = models.DateField()
-    price = models.DecimalField(max_digits=10, decimal_places=2)
+    price = models.DecimalField(max_digits=20, decimal_places=6) #TODO: change name to value or smth
 
     class Meta:
         unique_together = ('asset', 'date')

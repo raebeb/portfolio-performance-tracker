@@ -9,8 +9,8 @@ class Holding(models.Model):
     """
     portfolio = models.ForeignKey(Portfolio, on_delete=models.CASCADE, related_name='holdings')
     asset = models.ForeignKey(Asset, on_delete=models.CASCADE, related_name='holdings')
-    quantity = models.DecimalField(max_digits=10, decimal_places=2)
+    quantity = models.DecimalField(max_digits=20, decimal_places=6)
 
 
     def __str__(self):
-        return f"{self.asset.name} - {self.quantity} - {self.purchase_price} - {self.purchase_date}"
+        return f"{self.asset.name} - {self.quantity}"
