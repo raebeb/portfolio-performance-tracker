@@ -69,11 +69,12 @@ def calculate_daily_values(portfolio: Portfolio, start_date: date, end_date: dat
                 'price': price,
                 'quantity': quantity,
                 'value': value,
-                'weight': Decimal(0)  # asign a default weight of 0 for now #TODO: note for myself: check if this is correct
+                'weight': Decimal(0)  # Placeholder
             }
 
-        for asset_data in day_data['assets'].values():
-            asset_data['weight'] = asset_data['value'] / day_data['total_value']
+        if day_data['total_value'] > 0:
+            for asset_data in day_data['assets'].values():
+                asset_data['weight'] = asset_data['value'] / day_data['total_value']
 
         result[str(date_key)] = day_data
 
