@@ -65,6 +65,7 @@ logs:
 etl:
 	$(DC) exec backend python manage.py load_excel_data $(file)
 
+# run the tests
 test:
 	$(DC) exec backend pytest
 
