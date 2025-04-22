@@ -1,16 +1,29 @@
 import { useEffect, useState } from 'react';
 import { Line } from 'react-chartjs-2';
-import 'chart.js/auto';
+import {
+    Chart as ChartJS,
+    LineElement,
+    CategoryScale,
+    LinearScale,
+    PointElement,
+    Title,
+    Tooltip,
+    Legend,
+    Filler
+} from 'chart.js';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+
+ChartJS.register(LineElement, CategoryScale, LinearScale, PointElement, Title, Tooltip, Legend, Filler);
 
 const PortfolioChart = () => {
     const [data, setData] = useState([]);
     const [startDate, setStartDate] = useState(new Date('2022-03-08'));
     const [endDate, setEndDate] = useState(new Date('2022-03-20'));
-    const [chartData, setChartData] = useState(null);
-
     const [portfolioId, setPortfolioId] = useState(1);
+
+    const [weightsChart, setWeightsChart] = useState(null);
+    const [valueChart, setValueChart] = useState(null);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -35,26 +48,44 @@ const PortfolioChart = () => {
         if (!data || data.length === 0) return;
 
         const labels = data.map(item => item.date);
+
+        // --- Pesos (w_{i,t}) ---
         const allCategories = Object.keys(data[0].weights);
 
-        const datasets = allCategories.map((category, i) => ({
+        const datasetsWeights = allCategories.map((category, i) => ({
             label: category,
             data: data.map(day => day.weights[category]),
-            borderColor: `hsl(${i * 25}, 70%, 50%)`,
-            backgroundColor: `hsla(${i * 25}, 70%, 50%, 0.3)`,
-            fill: false,
-            tension: 0.3
+            backgroundColor: `hsla(${i * 30}, 70%, 60%, 0.5)`,
+            borderColor: `hsl(${i * 30}, 70%, 40%)`,
+            fill: true,
+            tension: 0.3,
+            stack: 'stack1'
         }));
 
-        setChartData({
+        setWeightsChart({
             labels,
-            datasets
+            datasets: datasetsWeights
+        });
+
+        // --- Valor total (V_t) ---
+        setValueChart({
+            labels,
+            datasets: [
+                {
+                    label: 'Valor total del portafolio',
+                    data: data.map(day => day.total_value),
+                    borderColor: '#1f77b4',
+                    backgroundColor: 'rgba(31, 119, 180, 0.2)',
+                    fill: false,
+                    tension: 0.3
+                }
+            ]
         });
     }, [data]);
 
     return (
         <div style={{ width: '100%', padding: '2rem' }}>
-            <h2 style={{ textAlign: 'center' }}>Distribución de Pesos por Activo</h2>
+            <h2 style={{ textAlign: 'center' }}>Evolución del Portafolio</h2>
 
             <div style={{ display: 'flex', gap: '2rem', justifyContent: 'center', marginBottom: '2rem' }}>
                 <div>
@@ -76,32 +107,40 @@ const PortfolioChart = () => {
                 </div>
             </div>
 
-            <div style={{ width: '100%', height: '600px' }}>
-                {chartData ? (
+            {/* Gráfico de pesos */}
+            <div style={{ width: '100%', height: '400px', marginBottom: '3rem' }}>
+                {weightsChart ? (
                     <Line
-                        data={chartData}
+                        data={weightsChart}
                         options={{
                             maintainAspectRatio: false,
+                            stacked: true,
                             plugins: {
-                                legend: {
-                                    position: 'right', // <-- esto mejora muchísimo
-                                    labels: {
-                                        boxWidth: 20,
-                                        padding: 10
-                                    }
-                                },
-                                title: {
-                                    display: false
-                                }
-                            },
-                            layout: {
-                                padding: 10
+                                legend: { position: 'bottom' }
                             },
                             responsive: true
                         }}
                     />
                 ) : (
-                    <p>Cargando datos...</p>
+                    <p>Cargando gráfico de pesos...</p>
+                )}
+            </div>
+
+            {/* Gráfico de valor total */}
+            <div style={{ width: '100%', height: '400px' }}>
+                {valueChart ? (
+                    <Line
+                        data={valueChart}
+                        options={{
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: { position: 'bottom' }
+                            },
+                            responsive: true
+                        }}
+                    />
+                ) : (
+                    <p>Cargando gráfico de valor...</p>
                 )}
             </div>
         </div>
